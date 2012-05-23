@@ -7,6 +7,15 @@ REST interface for MongoDB written in Ruby
 Running
 -------
 
+For quick demo or development:
+
+```
+gem install bundler
+bundle
+rackup
+```
+
+
 In production:
 
 1. Clone to Apache-servable directory
@@ -18,14 +27,6 @@ In production:
 ```
 gem install bundler
 bundle --without development
-```
-
-For development:
-
-```
-gem install bundler
-bundle
-rackup
 ```
 
 Testing

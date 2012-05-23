@@ -9,10 +9,15 @@ Running
 
 In production:
 
+1. Clone to Apache-servable directory
+2. Install passenger for Apache
+3. Create vhost pointing to the directory where you cloned
+4. cd into cloned dirctory
+5. Run:
+
 ```
 gem install bundler
 bundle --without development
-rackup
 ```
 
 For development:

@@ -91,6 +91,10 @@ class DrowsyDromedary < Grape::API
     end
   end
 
+  rescue_from BSON::InvalidObjectId do |e|
+    Rack::Response.new([ "#{request.params[:id].inspect} is not a valid document id!" ], 400)
+  end
+
   get '/' do
     connect.database_names
   end
@@ -146,7 +150,7 @@ class DrowsyDromedary < Grape::API
       desc "Add a new item to the collection"
       post do
         data = extract_data_from_params
-        id = @db.collection(params[:collection]).save(data)
+        id = @db.collection(params[:collection]).insert(data)
         # FIXME: save ourselves the extra query and just return `data`?
         @db.collection(params[:collection]).find_one(id)
       end
@@ -156,7 +160,13 @@ class DrowsyDromedary < Grape::API
       desc "Retrieve the item with id :id from the collection"
       get '/:id' do
         id = BSON::ObjectId(params[:id])
-        @db.collection(params[:collection]).find_one(id)
+        item = @db.collection(params[:collection]).find_one(id)
+
+        unless item
+          error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
+        end
+
+        item
       end
 
       desc "Replace the item with id :id in the collection"
@@ -164,11 +174,37 @@ class DrowsyDromedary < Grape::API
         id = BSON::ObjectId(params[:id])
         data = extract_data_from_params
 
-        @db.collection(params[:collection]).update(
-          {'_id' => id},
-          data
-        )
-        # FIXME: save ourselves the extra query and just return `data`?
+        # TODO: switch to find_and_modify for better performance?
+        item = @db.collection(params[:collection]).find_one(id)
+
+        unless item
+          error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
+        end
+
+        data['_id'] = id
+
+        @db.collection(params[:collection]).save(data)
+
+        # FIXME: save ourselves the extra query and just return `data`? (may need to stringify data['_id'] first though)
+        @db.collection(params[:collection]).find_one(id)
+      end
+
+      desc "Replaces the given attributes in the item with id :id in the collection"
+      patch '/:id' do
+        id = BSON::ObjectId(params[:id])
+        data = extract_data_from_params
+
+        item = @db.collection(params[:collection]).find_one(id)
+
+        unless item
+          error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
+        end
+
+        item.merge!(data)
+
+        @db.collection(params[:collection]).save(item)
+
+        # FIXME: save ourselves the extra query and just return `item`?
         @db.collection(params[:collection]).find_one(id)
       end
 

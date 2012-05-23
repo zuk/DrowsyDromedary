@@ -10,6 +10,14 @@ GIT
       rack
       rack-mount
 
+GIT
+  remote: https://github.com/brynary/rack-test.git
+  revision: cab8eb929b45d9e32474fad1b6806c2ab8f6bea8
+  ref: cab8eb929b
+  specs:
+    rack-test (0.6.1)
+      rack (>= 1.0)
+
 GEM
   specs:
     archive-tar-minitar (0.5.2)
@@ -36,8 +44,6 @@ GEM
       rack
     rack-mount (0.6.14)
       rack (>= 1.0.0)
-    rack-test (0.6.1)
-      rack (>= 1.0)
     rspec (2.10.0)
       rspec-core (~> 2.10.0)
       rspec-expectations (~> 2.10.0)
@@ -69,6 +75,6 @@ DEPENDENCIES
   mongo
   pry
   rack-cors
-  rack-test
+  rack-test!
   rspec
   ruby-debug19

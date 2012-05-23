@@ -23,5 +23,5 @@ use Rack::Cors do
   end
 end
 
-require './drowsy'
+require './drowsy_dromedary'
 run DrowsyDromedary

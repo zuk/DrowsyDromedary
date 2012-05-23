@@ -13,9 +13,9 @@ class DrowsyDromedary < Grape::API
   def initialize
     super
     @dbs ||= {}
-    File.open("config.yml") do |f|
-      @config = YAML.load(f)
-    end
+    # File.open("config.yml") do |f|
+    #   @config = YAML.load(f)
+    # end
   end
 
   helpers do

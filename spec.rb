@@ -112,6 +112,13 @@ describe DrowsyDromedary do
         JSON.parse(last_response.body).should == {'foo' => 'faa', '_id' => { '$oid' => id.to_s }}
       end
 
+      it "returns a 404 if the item requested from the collection by its id does not exist" do
+        id = BSON::ObjectId("000000000000000000000000") # we're assuming an item with this id does not exist
+
+        get "/#{$DB}/testing/#{id}"
+        last_response.status.should == 404
+      end
+
       describe "using JSON query" do
         before(:each) do
           id1 = @coll.save({"fee" => {"cost" => 1000}, "foo" => "faa"})
@@ -204,7 +211,7 @@ describe DrowsyDromedary do
       it "replaces an item in the collection" do
         id = @coll.save({"foo" => "faa"})
 
-        fff = {"foo" => "fff", "ggg" => "hhh"}
+        fff = {"ggg" => "hhh"}
 
         put "/#{$DB}/testing/#{id}", fff
         last_response.status.should == 200
@@ -213,6 +220,25 @@ describe DrowsyDromedary do
 
         foo = @coll.find_one(id)
         foo.should == fff.merge('_id' => id)
+        foo['foo'].should be_nil
+        foo['ggg'].should == 'hhh'
+      end
+    end
+
+    describe "PATCH" do
+      it "updates an item in the collection" do
+        id = @coll.save({"foo" => "faa"})
+
+        fff = {"ggg" => "hhh"}
+
+        patch "/#{$DB}/testing/#{id}", fff
+        last_response.status.should == 200
+        JSON.parse(last_response.body).should == 
+          fff.merge('_id' => { '$oid' => id.to_s }, 'foo' => 'faa')
+
+        foo = @coll.find_one(id)
+        foo['foo'].should == 'faa'
+        foo['ggg'].should == 'hhh'
       end
     end
 

@@ -45,5 +45,5 @@ Running RSpec Tests
 
 ```
 bundle
-bundle exec rspec -c -fd -d spec.rb
+bundle exec rspec -c -fd spec.rb
 ```

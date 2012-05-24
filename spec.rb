@@ -7,12 +7,9 @@ require 'bundler'
 Bundler.setup :default, :development
 
 require 'rack/test'
-require 'pry'
 
 require 'base64'
 require 'cgi'
-
-require 'hashie/hash'
 
 require 'mongo'
 

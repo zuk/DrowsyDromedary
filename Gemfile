@@ -1,4 +1,7 @@
+source :rubygems
+
 gem 'grape', :git => 'git://github.com/intridea/grape.git', :ref => "346fb94"
+gem 'json'
 gem 'mongo'
 gem 'bson'
 gem 'bson_ext'

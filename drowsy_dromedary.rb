@@ -92,7 +92,7 @@ class DrowsyDromedary < Grape::API
   end
 
   rescue_from BSON::InvalidObjectId do |e|
-    Rack::Response.new([ "#{request.params[:id].inspect} is not a valid document id!" ], 400)
+    error_response({message: e, status: 400})
   end
 
   get '/' do

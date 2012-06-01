@@ -175,11 +175,11 @@ class DrowsyDromedary < Grape::API
         data = extract_data_from_params
 
         # TODO: switch to find_and_modify for better performance?
-        item = @db.collection(params[:collection]).find_one(id)
+        # item = @db.collection(params[:collection]).find_one(id)
 
-        unless item
-          error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
-        end
+        # unless item
+        #   error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
+        # end
 
         data['_id'] = id
 

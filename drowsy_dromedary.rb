@@ -92,7 +92,7 @@ class DrowsyDromedary < Grape::API
   end
 
   rescue_from BSON::InvalidObjectId do |e|
-    error_response({message: e, status: 400})
+    error_response({message => e, status => 400})
   end
 
   get '/' do

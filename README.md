@@ -73,6 +73,14 @@ CORS access can be restricted by modifying the `Rack::Cors` section of Drowsy's
 
 ********************************************
 
+Usage
+-----
+
+Usage examples with browser-side JavaScript frameworks:
+
+* [jQuery Example](https://gist.github.com/2876909)
+* [Backbone.js Example](https://gist.github.com/2877040)
+
 API
 ===
 

@@ -47,3 +47,217 @@ Running RSpec Tests
 bundle
 bundle exec rspec -c -fd spec.rb
 ```
+
+********************************************
+
+API
+===
+
+Replace `db` with your database name and `collection` with your collection name.
+All parameters must be given as valid JSON strings, and all responses (including errors) are returned in JSON format.
+
+
+`GET /`
+-------
+**List databases**
+
+###### Response
+
+`Status: 200`
+```json
+[
+  "groceries",
+  "stuff",
+  "things"
+]
+```
+
+
+`GET /db`
+------------------------------
+**List collections in a database**
+
+###### Response
+
+`Status: 200`
+```json
+[
+  "fruit",
+  "vegetables",
+  "cheeses"
+]
+```
+
+
+`POST /db`
+----------
+**Create a collection in a database**
+
+###### Parameters
+
+`collection`
+  * The name of the collection to create.
+
+
+`GET /db/collection`
+--------------------
+**List items in a collection**
+
+###### Parameters
+
+`selector`
+  * A [Mongo query expression](http://www.mongodb.org/display/DOCS/Querying) specifying which items to return.
+  * Examples:
+    * `{"fruit":"apple","colour":"green"}` (all items where 'fruit' is 'apple' and 'colour' is 'green')
+    * `{"fruit":{"$exists":true}}` (all items that have a 'fruit' property)
+
+`sort`
+  * An array of property-order pairs to sort on.
+  * Examples:
+    * `["fruit","DESC"]` (sort by the 'fruit' property, in descending order)
+    * `["fruit","ASC"]` (sort by the 'fruit' property, in ascending order)
+    * `[["fruit","ASC"],["colour","DESC"]]` (sort by the 'fruit' property first in ascending order and then by the 'colour' property in descending order)
+
+
+###### Response
+
+`Status: 200`
+```json
+[
+  {
+    "_id": { "$oid": "4deeb1d9349c85523b000001" },
+    "fruit": "orange",
+    "colour": "orange"
+  },
+  {
+    "_id": { "$oid": "4deeb1d9349c85523b000002" },
+    "fruit": "kiwi",
+    "colour": "brown",
+    "size": "small"
+  },
+  {
+    "_id": { "$oid": "4deeb1d9349c85523b000003" },
+    "fruit": "banana",
+    "colour": "yellow",
+    "organic": true
+  }
+]
+```
+
+`POST /db/collection`
+---------------------
+**Add an item to a collection**
+
+The request data should contain a full representation of the item to create. This can be sent either as regular, url-encoded form data 
+(i.e. `Content-Type: application/x-www-form-urlencoded`), or as a JSON-encoded string (i.e. `Content-Type: application/json`).
+
+The server will respond with a full representation of the newly created object, with a server-generated `_id` if none was provided
+in the request data.
+
+###### Request
+
+`POST /groceries/cart`
+```json
+{
+  "fruit": "apple",
+  "colour": "red",
+  "variety": "Macintosh"
+}
+```
+
+###### Response
+
+`Status: 201`
+```json
+{
+  "_id": { "$oid": "4deeb1d9349c85523b000004" },
+  "fruit": "apple",
+  "colour": "red",
+  "variety": "Macintosh"
+}
+```
+
+
+`PUT /db/collection/id`
+-----------------------
+**Replace an item in a collection**
+
+The request data should contain a full representation of the item to replace. This can be sent either as regular, url-encoded form data 
+(i.e. `Content-Type: application/x-www-form-urlencoded`), or as a JSON-encoded string (i.e. `Content-Type: application/json`).
+
+If the item with the given id does not yet exist, it will be automatically created. However this behaviour is subject to change
+in a future version (an additional parameter may be required to enable this "upsert" behaviour).
+
+###### Request
+
+`PUT /groceries/cart/4deeb1d9349c85523b000004`
+```json
+{
+  "fruit": "apple",
+  "colour": "green",
+  "variety": "Golen Delicious"
+}
+```
+
+###### Response
+
+`Status: 200`
+```json
+{
+  "_id": { "$oid": "4deeb1d9349c85523b000004" },
+  "fruit": "apple",
+  "colour": "green",
+  "variety": "Golen Delicious"
+}
+```
+
+
+`PATCH /db/collection/id`
+-------------------------
+**Partially replace an item in a collection**
+
+Unlike a PUT, a PATCH request will only replace the given properties (instead of replacing the entire item).
+
+The request data should contain a full representation of the item to replace. This can be sent either as regular, url-encoded form data 
+(i.e. `Content-Type: application/x-www-form-urlencoded`), or as a JSON-encoded string (i.e. `Content-Type: application/json`).
+
+If the item with the given id does not yet exist, the server will respond with `404` (`Not Found`).
+
+###### Request
+
+`PATCH /groceries/cart/4deeb1d9349c85523b000004`
+```json
+{
+  "colour": "orange"
+}
+```
+
+###### Response
+
+`Status: 200`
+```json
+{
+  "_id": { "$oid": "4deeb1d9349c85523b000004" },
+  "fruit": "apple",
+  "colour": "orange",
+  "variety": "Golen Delicious"
+}
+```
+
+
+`DELETE /db/collection/id`
+--------------------------
+**Delete an item from a collection**
+
+Note that the request will succeed regardless of whether an item with the given id exists.
+
+###### Request
+
+`DELETE /groceries/cart/4deeb1d9349c85523b000004`
+
+###### Response
+
+`Status: 200`
+```json
+{}
+```

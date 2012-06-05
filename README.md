@@ -48,6 +48,29 @@ bundle
 bundle exec rspec -c -fd spec.rb
 ```
 
+Security
+--------
+
+By default DrowsyDromedary is wide open. This means that **your entire MongoDB system will be exposed**. 
+
+If you are publicly exposing your Drowsy, it is extremely important to lock down access to the service.
+This can be done with additional configuration to the Rack container running your app. For example, if you are
+deploying using Apache (via Passenger), you could limit access to specific hosts and/or implement HTTP
+authentication using [mod_auth](http://httpd.apache.org/docs/2.0/howto/auth.html).
+
+Another option is to add Rack middleware for authorization and authentication. This would be done by modifying
+Drowsy's [`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file. [Warden](https://github.com/hassox/warden/wiki) is one such middleware option.
+
+#### CORS (Cross-domain Browser Requests)
+
+The default DrowsyDromedary configuration has an open [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
+configuration. Cross-domain browser requests to Drowsy are allowed from all domains for all HTTP methods.
+
+CORS access can be restricted by modifying the `Rack::Cors` section of Drowsy's
+[`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file.
+
+
+
 ********************************************
 
 API

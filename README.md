@@ -107,16 +107,10 @@ All parameters must be given as valid JSON strings, and all responses (including
 -------
 **Create a database**
 
-###### Response
+###### Parameters
 
-`Status: 200`
-```json
-[
-  "groceries",
-  "stuff",
-  "things"
-]
-```
+`db`
+  * The name of the database to create.
 
 
 `GET /db`
@@ -125,8 +119,8 @@ All parameters must be given as valid JSON strings, and all responses (including
 
 ###### Parameters
 
-`db`
-  * The name of the database to create.
+`collection`
+  * The name of the collection to create.
 
 
 `POST /db`

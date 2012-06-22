@@ -103,21 +103,30 @@ All parameters must be given as valid JSON strings, and all responses (including
 ]
 ```
 
-
-`GET /db`
-------------------------------
-**List collections in a database**
+`POST /`
+-------
+**Create a database**
 
 ###### Response
 
 `Status: 200`
 ```json
 [
-  "fruit",
-  "vegetables",
-  "cheeses"
+  "groceries",
+  "stuff",
+  "things"
 ]
 ```
+
+
+`GET /db`
+------------------------------
+**List collections in a database**
+
+###### Parameters
+
+`db`
+  * The name of the database to create.
 
 
 `POST /db`

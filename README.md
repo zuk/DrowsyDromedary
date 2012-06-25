@@ -117,11 +117,13 @@ All parameters must be given as valid JSON strings, and all responses (including
 ------------------------------
 **List collections in a database**
 
-###### Parameters
-
-`collection`
-  * The name of the collection to create.
-
+```json
+[
+  'fruit',
+  'vegetables',
+  'snacks'
+]
+```
 
 `POST /db`
 ----------

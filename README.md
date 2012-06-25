@@ -121,7 +121,7 @@ All parameters must be given as valid JSON strings, and all responses (including
 
 ```json
 [
-  'fruit',
+  'fruits',
   'vegetables',
   'snacks'
 ]

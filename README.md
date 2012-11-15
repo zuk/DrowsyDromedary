@@ -150,8 +150,8 @@ All parameters must be given as valid JSON strings, and all responses (including
     * `{"fruit":{"$exists":true}}` (all items that have a 'fruit' property)
     * Example Request:
       * `GET` http://drowsy.example.com/fridge/crisper?selector={"fruit":{"$exists":true}}
-        * Note that the `selector` value should be URL encoded; however most browsers will do this for you if you 
-          enter the un-encoded query in the URL bar.
+          * Note that the `selector` value should be URL encoded; however most browsers will do this for you if you 
+            enter the un-encoded query in the URL bar.
          
 
 `sort`
@@ -162,8 +162,8 @@ All parameters must be given as valid JSON strings, and all responses (including
     * `[["fruit","ASC"],["colour","DESC"]]` (sort by the 'fruit' property first in ascending order and then by the 'colour' property in descending order)
     * Example Request:
       * `GET` http://drowsy.example.com/fridge/crisper?sort=[["fruit","ASC"],["colour","DESC"]]
-        * Note that the `sort` value should be URL encoded; however most browsers will do this for you if you 
-          enter the un-encoded query in the URL bar.
+          * Note that the `sort` value should be URL encoded; however most browsers will do this for you if you 
+            enter the un-encoded query in the URL bar.
 
 ###### Response
 

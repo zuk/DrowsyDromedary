@@ -98,8 +98,8 @@ All parameters must be given as valid JSON strings, and all responses (including
 ```json
 [
   "groceries",
-  "stuff",
-  "things"
+  "fridge",
+  "pantry"
 ]
 ```
 
@@ -121,9 +121,9 @@ All parameters must be given as valid JSON strings, and all responses (including
 
 ```json
 [
-  'fruits',
-  'vegetables',
-  'snacks'
+  "fruits",
+  "vegetables",
+  "snacks"
 ]
 ```
 

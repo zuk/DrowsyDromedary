@@ -69,6 +69,9 @@ configuration. Cross-domain browser requests to Drowsy are allowed from all doma
 CORS access can be restricted by modifying the `Rack::Cors` section of Drowsy's
 [`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file.
 
+Note that due to some questionable decisions in the CORS spec, CORS requests that result in an error 
+(`404`, `500`, etc.) will always have a blank body (i.e. no detailed error message). If you want better error
+handling, consider putting DrowsyDromedary behind a same-origin reverse proxy.
 
 
 ********************************************

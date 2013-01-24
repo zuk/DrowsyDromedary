@@ -69,6 +69,10 @@ configuration. Cross-domain browser requests to Drowsy are allowed from all doma
 CORS access can be restricted by modifying the `Rack::Cors` section of Drowsy's
 [`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file.
 
+Note that due to some questionable decisions in the CORS spec, CORS requests that result in an error 
+(`404`, `500`, etc.) will always have a blank body (i.e. no detailed error message). In some browsers the
+error status code is also obscured and always reported as `0` instead of the real code. If you want better error
+handling, consider putting DrowsyDromedary behind a same-origin reverse proxy.
 
 
 ********************************************
@@ -98,8 +102,8 @@ All parameters must be given as valid JSON strings, and all responses (including
 ```json
 [
   "groceries",
-  "stuff",
-  "things"
+  "fridge",
+  "pantry"
 ]
 ```
 
@@ -121,9 +125,9 @@ All parameters must be given as valid JSON strings, and all responses (including
 
 ```json
 [
-  'fruits',
-  'vegetables',
-  'snacks'
+  "fruits",
+  "vegetables",
+  "snacks"
 ]
 ```
 
@@ -148,6 +152,11 @@ All parameters must be given as valid JSON strings, and all responses (including
   * Examples:
     * `{"fruit":"apple","colour":"green"}` (all items where 'fruit' is 'apple' and 'colour' is 'green')
     * `{"fruit":{"$exists":true}}` (all items that have a 'fruit' property)
+    * Example Request:
+      * `GET` http://drowsy.example.com/fridge/crisper?selector={"fruit":{"$exists":true}}
+          * Note that the `selector` value should be URL encoded; however most browsers will do this for you if you 
+            enter the un-encoded query in the URL bar.
+         
 
 `sort`
   * An array of property-order pairs to sort on.
@@ -155,7 +164,10 @@ All parameters must be given as valid JSON strings, and all responses (including
     * `["fruit","DESC"]` (sort by the 'fruit' property, in descending order)
     * `["fruit","ASC"]` (sort by the 'fruit' property, in ascending order)
     * `[["fruit","ASC"],["colour","DESC"]]` (sort by the 'fruit' property first in ascending order and then by the 'colour' property in descending order)
-
+    * Example Request:
+      * `GET` http://drowsy.example.com/fridge/crisper?sort=[["fruit","ASC"],["colour","DESC"]]
+          * Note that the `sort` value should be URL encoded; however most browsers will do this for you if you 
+            enter the un-encoded query in the URL bar.
 
 ###### Response
 

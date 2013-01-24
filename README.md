@@ -87,7 +87,7 @@ Likewise, if you want Drowsy to store a date as an ISODate, send your data in th
 
 ```javascript
 var date = new Date();
-json = { "$date": date.toJSON() };
+dateJSON = { "$date": date.toJSON() };
 ```
 
 ********************************************

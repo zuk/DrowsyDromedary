@@ -2,6 +2,19 @@ require 'grape'
 require 'mongo'
 require 'yaml'
 require 'json'
+require 'time'
+
+# FIXME: monkeypatch! there's probably a safer way to do this...
+class Time
+  def to_json(*a)
+    # FIXME: higher accuracy is problematic, as it seems to add milliseconds for encode/decode time
+    "{\"$date\": \"#{iso8601(1)}\"}"
+  end
+
+  def as_json(options = {})
+    { "$date" => iso8601(1) }
+  end
+end
 
 class DrowsyDromedary < Grape::API
   version 'v1', :using => :header #, :vendor => 'mongodb'
@@ -64,7 +77,18 @@ class DrowsyDromedary < Grape::API
       @env["rack.routing_args"].keys.each do |key|
         data.delete(key)
       end
+      process_data_recursively data
       data
+    end
+
+    def process_data_recursively(data)
+      data.keys.each do |k|
+        if data[k]["$date"]
+          data[k] = Time.parse data[k]["$date"]
+        elsif data[k].kind_of? Hash
+          process_data_recursively(data[k])
+        end
+      end
     end
 
     def extract_selector_from_params

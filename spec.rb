@@ -26,13 +26,13 @@ $DB = "drowsy-test-#{rand(10e10).to_s(32)}"
 describe DrowsyDromedary do
   before(:all) do
     @mongo = Mongo::Connection.new
-    puts "Creating test database #{$DB.inspect}..."
+    #puts "Creating test database #{$DB.inspect}..."
     @db = @mongo.db($DB)
     @db.collection_names # creates the $DB database
   end
 
   after(:all) do
-    puts "Dropping test database #{$DB.inspect}..."
+    #puts "Dropping test database #{$DB.inspect}..."
     @mongo.drop_database($DB)
     @mongo.close
   end
@@ -99,21 +99,6 @@ describe DrowsyDromedary do
         get "/#{$DB}/testing"
         last_response.status.should == 200
         JSON.parse(last_response.body).should == [{'foo' => 'faa', '_id' => { '$oid' => id.to_s }}]
-      end
-
-      it "returns a record from the collection by its id" do
-        id = @coll.save({"foo" => "faa"})
-
-        get "/#{$DB}/testing/#{id}"
-        last_response.status.should == 200
-        JSON.parse(last_response.body).should == {'foo' => 'faa', '_id' => { '$oid' => id.to_s }}
-      end
-
-      it "returns a 404 if the item requested from the collection by its id does not exist" do
-        id = BSON::ObjectId("000000000000000000000000") # we're assuming an item with this id does not exist
-
-        get "/#{$DB}/testing/#{id}"
-        last_response.status.should == 404
       end
 
       describe "using JSON query" do
@@ -204,51 +189,100 @@ describe DrowsyDromedary do
       end
     end
 
-    describe "PUT" do
-      it "replaces an item in the collection" do
-        id = @coll.save({"foo" => "faa"})
+    describe "/db/collection/id" do
 
-        fff = {"ggg" => "hhh"}
+      describe "GET" do
+        it "returns a record from the collection by its id" do
+          id = @coll.save({"foo" => "faa"})
 
-        put "/#{$DB}/testing/#{id}", fff
-        last_response.status.should == 200
-        JSON.parse(last_response.body).should == 
-          fff.merge('_id' => { '$oid' => id.to_s })
+          get "/#{$DB}/testing/#{id}"
+          last_response.status.should == 200
+          JSON.parse(last_response.body).should == {'foo' => 'faa', '_id' => { '$oid' => id.to_s }}
+        end
 
-        foo = @coll.find_one(id)
-        foo.should == fff.merge('_id' => id)
-        foo['foo'].should be_nil
-        foo['ggg'].should == 'hhh'
+        it "returns a 404 if the item requested from the collection by its id does not exist" do
+          id = BSON::ObjectId("000000000000000000000000") # we're assuming an item with this id does not exist
+
+          get "/#{$DB}/testing/#{id}"
+          last_response.status.should == 404
+        end
+
+        it "JSONifies ISODate values as { $date: '...' }" do
+          date1 = Time.now
+          date2 = Time.at(Time.now.to_i - 60 * 60 * 10)
+          id = @coll.save({"foo" => date1, "bar" => {"bah" => date2}})
+
+          get "/#{$DB}/testing/#{id}"
+          doc = JSON.parse(last_response.body)
+          doc['foo'].should == { "$date" => date1.getutc.iso8601(1) }
+          doc['bar']['bah'].should == { "$date" => date2.getutc.iso8601(1) }
+        end
       end
-    end
 
-    describe "PATCH" do
-      it "updates an item in the collection" do
-        id = @coll.save({"foo" => "faa"})
+      describe "PUT" do
+        it "replaces an item in the collection" do
+          id = @coll.save({"foo" => "faa"})
 
-        fff = {"ggg" => "hhh"}
+          fff = {"ggg" => "hhh"}
 
-        patch "/#{$DB}/testing/#{id}", fff
-        last_response.status.should == 200
-        JSON.parse(last_response.body).should == 
-          fff.merge('_id' => { '$oid' => id.to_s }, 'foo' => 'faa')
+          put "/#{$DB}/testing/#{id}", fff
+          last_response.status.should == 200
+          JSON.parse(last_response.body).should == 
+            fff.merge('_id' => { '$oid' => id.to_s })
 
-        foo = @coll.find_one(id)
-        foo['foo'].should == 'faa'
-        foo['ggg'].should == 'hhh'
+          foo = @coll.find_one(id)
+          foo.should == fff.merge('_id' => id)
+          foo['foo'].should be_nil
+          foo['ggg'].should == 'hhh'
+        end
+
+        it "stores dates encoded as { $date: '...' } as ISODate" do
+          id = @coll.save({"foo" => "faa"})
+
+          date1 = Time.now
+          date2 = Time.at(Time.now.to_i - 60 * 60 * 10)
+
+          fff = {"foo" => {"$date" => date1.iso8601(1)}, "bar" => {"bah" => {"$date" => date2.iso8601(1)}}}
+
+          put "/#{$DB}/testing/#{id}", fff
+          last_response.status.should == 200
+
+          foo = @coll.find_one(id)
+          # NOTE: Mongo stores times as UTC
+          foo['foo'].to_i.should == date1.getutc.to_i
+          foo['bar']['bah'].to_i.should == date2.getutc.to_i
+        end
       end
-    end
 
-    describe "DELETE" do
-      it "deletes an item from the collection" do
-        id = @coll.save({"foo" => "faa"})
+      describe "PATCH" do
+        it "updates an item in the collection" do
+          id = @coll.save({"foo" => "faa"})
 
-        delete "/#{$DB}/testing/#{id}"
-        last_response.status.should == 200
+          fff = {"ggg" => "hhh"}
 
-        foo = @coll.find_one(id)
-        foo.should be_nil
+          patch "/#{$DB}/testing/#{id}", fff
+          last_response.status.should == 200
+          JSON.parse(last_response.body).should == 
+            fff.merge('_id' => { '$oid' => id.to_s }, 'foo' => 'faa')
+
+          foo = @coll.find_one(id)
+          foo['foo'].should == 'faa'
+          foo['ggg'].should == 'hhh'
+        end
       end
+
+      describe "DELETE" do
+        it "deletes an item from the collection" do
+          id = @coll.save({"foo" => "faa"})
+
+          delete "/#{$DB}/testing/#{id}"
+          last_response.status.should == 200
+
+          foo = @coll.find_one(id)
+          foo.should be_nil
+        end
+      end
+
     end
   end
 end

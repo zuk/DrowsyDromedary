@@ -99,6 +99,7 @@ Usage examples with browser-side JavaScript frameworks:
 
 * [jQuery Example](https://gist.github.com/2876909)
 * [Backbone.js Example](https://gist.github.com/2877040)
+   * Also have a look at [Backbone.Drowsy](https://github.com/zuk/Backbone.Drowsy)
 
 API
 ===

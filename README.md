@@ -75,6 +75,21 @@ error status code is also obscured and always reported as `0` instead of the rea
 handling, consider putting DrowsyDromedary behind a same-origin reverse proxy.
 
 
+#### Dates/Times
+
+Date/Times values in the databse (i.e. [ISODate](http://docs.mongodb.org/manual/core/document/#date) objects) are represented in Drowsy's JSON responses as:
+
+```json
+{ "$date": "2013-01-24T06:40:43.0Z" }
+```
+
+Likewise, if you want Drowsy to store a date as an ISODate, send your data in the same format. The string value can be anything parsable by Ruby's `Time.parse()`, but it's probalby best to stick to the ISO8601 format. For example, in JavaScript:
+
+```javascript
+var date = new Date();
+json = { "$date": date.toJSON() };
+```
+
 ********************************************
 
 Usage

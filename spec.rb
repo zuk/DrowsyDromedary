@@ -252,6 +252,22 @@ describe DrowsyDromedary do
           foo['foo'].to_i.should == date1.getutc.to_i
           foo['bar']['bah'].to_i.should == date2.getutc.to_i
         end
+
+				# test for bug introduced in c7c944e
+				it "can deal with JSON input containing arrays" do
+					id = @coll.save({"foo" => "faa"})
+
+					fff = {"foo" => [1,2,3], "bar" => {"bah" => ["a","b","c"]}}
+
+          put "/#{$DB}/testing/#{id}", fff
+          last_response.status.should == 200
+
+          foo = @coll.find_one(id)
+          foo['foo'].should be_instance_of(Array)
+					foo['foo'][0].should == 1
+          foo['bar']['bah'].should be_instance_of(Array)
+					foo['bar']['bah'][1].should == "b"
+				end
       end
 
       describe "PATCH" do

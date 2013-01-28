@@ -259,7 +259,7 @@ describe DrowsyDromedary do
 
 					fff = {"foo" => [1,2,3], "bar" => {"bah" => ["a","b","c"]}}
 
-          put "/#{$DB}/testing/#{id}", fff
+          put "/#{$DB}/testing/#{id}", fff.to_json
           last_response.status.should == 200
 
           foo = @coll.find_one(id)

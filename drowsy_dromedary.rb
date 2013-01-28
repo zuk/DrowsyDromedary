@@ -83,10 +83,12 @@ class DrowsyDromedary < Grape::API
 
     def process_data_recursively(data)
       data.keys.each do |k|
-        if data[k]["$date"]
-          data[k] = Time.parse data[k]["$date"]
-        elsif data[k].kind_of? Hash
-          process_data_recursively(data[k])
+        if data[k].kind_of? Hash
+          if data[k]["$date"]
+            data[k] = Time.parse data[k]["$date"]
+          else
+            process_data_recursively(data[k])
+          end
         end
       end
     end
@@ -119,7 +121,7 @@ class DrowsyDromedary < Grape::API
     if e.nil? || e == "" # why is e coming up empty?
       e = "Invalid ObjectID!"
     end
-    error_response({'message' => e, 'status' => 400})
+    error_response({:message => e, :status => 400})
   end
 
   get '/' do

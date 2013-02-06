@@ -47,6 +47,11 @@ describe DrowsyDromedary do
     end
 
     describe "POST" do
+      after(:all) do
+        @mongo.drop_database($DB+"-created")
+        @mongo.drop_database("#{$DB}-created2")
+      end
+
       it "creates a database" do
         post "/", :db => "#{$DB}-created"
         last_response.status.should == 201

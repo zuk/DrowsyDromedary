@@ -58,6 +58,14 @@ describe DrowsyDromedary do
         post "/", :foo => "whatever"
         last_response.status.should == 400
       end
+
+      it "returns a 304 status when the db already exists" do
+        post "/", :db => "#{$DB}-created2"
+        last_response.status.should == 201
+
+        post "/", :db => "#{$DB}-created2"
+        last_response.status.should == 304
+      end
     end
   end
 
@@ -79,6 +87,14 @@ describe DrowsyDromedary do
       it "creates a collection in the db" do
         post "/#{$DB}", :collection => "faa"
         last_response.status.should == 201
+      end
+
+      it "returns a 304 status when the collection already exists" do
+        post "/#{$DB}", :collection => "faa2"
+        last_response.status.should == 201
+
+        post "/#{$DB}", :collection => "faa2"
+        last_response.status.should == 304
       end
     end
   end

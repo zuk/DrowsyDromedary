@@ -131,7 +131,15 @@ class DrowsyDromedary < Grape::API
   post '/' do
     check_required_params(:db)
     
+    if connect.database_names.include? params[:db]
+      redirect "/#{params[:db]}", :status => 304
+      status 304
+      next # bail early
+    end
+
     db = create_db(params[:db])
+
+
     if db 
       status 201
       db.collection_names

@@ -132,7 +132,8 @@ class DrowsyDromedary < Grape::API
     check_required_params(:db)
     
     if connect.database_names.include? params[:db]
-      status 304
+      redirect "/#{params[:db]}", :status => 200
+      status 200
       next # bail early
     end
 
@@ -165,7 +166,8 @@ class DrowsyDromedary < Grape::API
       check_required_params(:collection)
       
       if @db.collection_names.include? params[:collection]
-        status 304
+        redirect "/#{params[:db]}/#{params[:collection]}", :status => 200
+        status 200
         next # bail early
       end
 

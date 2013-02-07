@@ -165,17 +165,13 @@ class DrowsyDromedary < Grape::API
     post do
       check_required_params(:collection)
       
-      coll = nil
-      begin
-        coll = @db.create_collection(params[:collection])
-      rescue Mongo::MongoDBError => e
-        if e.message.include? "already exists"
-          redirect "/#{params[:db]}/#{params[:collection]}", :status => 304
-          status 304
-          next # bail early
-        end
+      if @db.collection_names.include? params[:collection]
+        redirect "/#{params[:db]}/#{params[:collection]}", :status => 304
+        status 304
+        next # bail early
       end
 
+      coll = @db.create_collection(params[:collection])
 
       if coll 
         redirect "/#{params[:db]}/#{params[:collection]}", :status => 201

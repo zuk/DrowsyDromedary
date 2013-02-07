@@ -64,7 +64,7 @@ describe DrowsyDromedary do
         last_response.status.should == 400
       end
 
-      it "returns a 201 status when the db is created and 201 when it already exists" do
+      it "returns a 201 status when the db is created and 200 when it already exists" do
         post "/", :db => "#{$DB}-created2"
         last_response.status.should == 201
 
@@ -94,7 +94,7 @@ describe DrowsyDromedary do
         last_response.status.should == 201
       end
 
-      it "returns a 201 status when the collection is created and 201 when it already exists" do
+      it "returns a 201 status when the collection is created and 200 when it already exists" do
         post "/#{$DB}", :collection => "faa2"
         last_response.status.should == 201
 

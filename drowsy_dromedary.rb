@@ -132,19 +132,17 @@ class DrowsyDromedary < Grape::API
     check_required_params(:db)
     
     if connect.database_names.include? params[:db]
-      redirect "/#{params[:db]}", :status => 200
       status 200
-      next # bail early
-    end
-
-    db = create_db(params[:db])
-
-
-    if db 
-      status 201
-      db.collection_names
+      connect_to_db(params[:db]).collection_names
     else
-      error!("Database #{params[:db].inspect} was not created.", 500)
+      db = create_db(params[:db])
+
+      if db 
+        status 201
+        db.collection_names
+      else
+        error!("Database #{params[:db].inspect} was not created.", 500)
+      end
     end
   end
 
@@ -166,18 +164,17 @@ class DrowsyDromedary < Grape::API
       check_required_params(:collection)
       
       if @db.collection_names.include? params[:collection]
-        redirect "/#{params[:db]}/#{params[:collection]}", :status => 200
         status 200
-        next # bail early
-      end
-
-      coll = @db.create_collection(params[:collection])
-
-      if coll 
-        redirect "/#{params[:db]}/#{params[:collection]}", :status => 201
-        status 201
+        @db.collection(params[:collection]).find().to_a
       else
-        error!("Database #{params[:db].inspect} was not created.", 500)
+        coll = @db.create_collection(params[:collection])
+
+        if coll 
+          redirect "/#{params[:db]}/#{params[:collection]}", :status => 201
+          status 201
+        else
+          error!("Database #{params[:db].inspect} was not created.", 500)
+        end
       end
     end
 

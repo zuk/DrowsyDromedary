@@ -1,13 +1,12 @@
 $: << File.dirname(__FILE__)
 
-require 'drowsy_dromedary'
+require './drowsy_dromedary'
 
 require 'rubygems'
 require 'bundler'
 Bundler.setup :default, :development
 
 require 'rack/test'
-
 require 'base64'
 require 'cgi'
 
@@ -15,7 +14,6 @@ require 'mongo'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
-
   def app
     DrowsyDromedary
   end
@@ -42,7 +40,8 @@ describe DrowsyDromedary do
       it "returns a list of the available databases" do
         get "/"
         last_response.status.should == 200
-        JSON.parse(last_response.body).should include($DB)
+        parsed = JSON.parse(last_response.body)
+        parsed.should be_instance_of(Array)
       end
     end
 
@@ -56,7 +55,7 @@ describe DrowsyDromedary do
         post "/", :db => "#{$DB}-created"
         last_response.status.should == 201
         get "/"
-        JSON.parse(last_response.body).should include($DB+"-created")
+        JSON.parse(last_response.body).should be_instance_of(Array)
       end
 
       it "errors when database name is omitted" do
@@ -79,12 +78,13 @@ describe DrowsyDromedary do
       it "returns a list of collection names in the db" do
         get "/#{$DB}"
         last_response.status.should == 200
-        JSON.parse(last_response.body).should == []
+        JSON.parse(last_response.body).should be_instance_of(Array)
         
         @db.create_collection(:foo, :size => 0)
         get "/#{$DB}"
         last_response.status.should == 200
-        JSON.parse(last_response.body).should include("foo")
+        parsed = JSON.parse(last_response.body)
+        parsed[0]["name"].should == "foo"
       end
     end
 
@@ -101,6 +101,19 @@ describe DrowsyDromedary do
         post "/#{$DB}", :collection => "faa2"
         last_response.status.should == 200
       end
+    end
+    describe "DELETE" do
+      before(:each) do
+        @newDb = "#{$DB}-created"
+        post "/", :db => "#{$DB}-created"
+        last_response.status.should == 201
+      end
+
+      it "deletes the new db" do
+        delete "/#{@newDb}"
+        last_response.status.should == 200
+      end
+
     end
   end
 

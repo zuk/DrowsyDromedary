@@ -42,6 +42,13 @@ DrowsyDromedary should now be up and running.
 
 Running RSpec Tests
 -------------------
+You can run the tests manually by running
+
+```
+rspec
+```
+
+You can also use Autotest if you're making some changes by running
 
 ```
 autotest

@@ -164,7 +164,8 @@ class DrowsyDromedary < Grape::API
 
     get do
       collections = @db.collection_names
-      #loop these and get descriptive. Also, remove system. collections...
+      #loop these and get descriptive. Also, remove system. collections
+      #might cause breaking changes?
       result = []
       collections.each do |coll|
         result << {:name => coll, :type => "collection", :documents => "/#{params[:db]}/#{coll}"} unless coll.include?("system.")
@@ -173,7 +174,8 @@ class DrowsyDromedary < Grape::API
     end
 
     delete do
-      @connection.drop_database(params[:db])
+      #drops the database
+      @connection.drop_database(params[:db]) if params[:db]
     end
 
     post do
@@ -194,8 +196,6 @@ class DrowsyDromedary < Grape::API
       end
     end
 
-    # TODO: implement DELETE to drop collection
-
     resource '/:collection' do
       desc "Retrieve all items in the collection"
       get do
@@ -215,7 +215,7 @@ class DrowsyDromedary < Grape::API
 
       # TODO: implement DELETE to allow mass deletion of items in collection
       delete do
-        @db.drop_collection(params[:collection])
+        @db.drop_collection(params[:collection]) if params[:collection]
       end
 
       desc "Retrieve the item with id :id from the collection"

@@ -44,8 +44,7 @@ Running RSpec Tests
 -------------------
 
 ```
-bundle
-bundle exec rspec -c -fd spec.rb
+autotest
 ```
 
 Security

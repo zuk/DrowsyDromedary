@@ -42,10 +42,16 @@ DrowsyDromedary should now be up and running.
 
 Running RSpec Tests
 -------------------
+You can run the tests manually by running
 
 ```
-bundle
-bundle exec rspec -c -fd spec.rb
+rspec
+```
+
+You can also use Autotest if you're making some changes by running
+
+```
+autotest
 ```
 
 Security

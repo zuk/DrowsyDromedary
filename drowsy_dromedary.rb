@@ -125,7 +125,14 @@ class DrowsyDromedary < Grape::API
   end
 
   get '/' do
-    connect.database_names
+    dbs = connect.database_names
+    #the names come back as a string array, which can break client platforms
+    #like Angular. Add some descriptive love here
+    result = []
+    dbs.each do |db|
+      result << {:name => db, :type => "database", :collections => "/#{db}"}
+    end
+    result
   end
 
   post '/' do
@@ -147,7 +154,6 @@ class DrowsyDromedary < Grape::API
   end
 
   # TODO: implement DELETE to drop database (or maybe not? too risky?)
-
   resource '/:db' do
     before do
       @db = connect_to_db(params[:db])
@@ -157,7 +163,19 @@ class DrowsyDromedary < Grape::API
     end
 
     get do
-      @db.collection_names
+      collections = @db.collection_names
+      #loop these and get descriptive. Also, remove system. collections
+      #might cause breaking changes?
+      result = []
+      collections.each do |coll|
+        result << {:name => coll, :type => "collection", :documents => "/#{params[:db]}/#{coll}"} unless coll.include?("system.")
+      end
+      result
+    end
+
+    delete do
+      #drops the database
+      @connection.drop_database(params[:db]) if params[:db]
     end
 
     post do
@@ -178,8 +196,6 @@ class DrowsyDromedary < Grape::API
       end
     end
 
-    # TODO: implement DELETE to drop collection
-
     resource '/:collection' do
       desc "Retrieve all items in the collection"
       get do
@@ -193,10 +209,14 @@ class DrowsyDromedary < Grape::API
         data = extract_data_from_params
         id = @db.collection(params[:collection]).insert(data)
         # FIXME: save ourselves the extra query and just return `data`?
+        # HACK: Most apps will want the _id on return, so this will just have to do
         @db.collection(params[:collection]).find_one(id)
       end
 
       # TODO: implement DELETE to allow mass deletion of items in collection
+      delete do
+        @db.drop_collection(params[:collection]) if params[:collection]
+      end
 
       desc "Retrieve the item with id :id from the collection"
       get '/:id' do

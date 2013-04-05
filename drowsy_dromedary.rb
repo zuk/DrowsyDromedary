@@ -241,6 +241,9 @@ class DrowsyDromedary < Grape::API
           error!("Item #{params[:id].inspect} doesn't exist in #{params[:collection].inspect}!", 404)
         end
 
+        data['_id'] = id
+        data.delete 'id'
+
         item.merge!(data)
 
         @db.collection(params[:collection]).save(item)

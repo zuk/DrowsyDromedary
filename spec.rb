@@ -306,6 +306,26 @@ describe DrowsyDromedary do
           foo['foo'].should == 'faa'
           foo['ggg'].should == 'hhh'
         end
+
+        it "doesn't do weird things to the id attribute" do
+          id = @coll.save({"boo" => "baa"})
+
+          fff = {
+            "ggg" => "hhh",
+            "_id" => "badid1",
+            "id" => "badid2"
+          }
+
+          patch "/#{$DB}/testing/#{id}", fff
+          last_response.status.should == 200
+          JSON.parse(last_response.body).should == 
+            {"_id"=> {"$oid" => id.to_s}, "boo"=>"baa", "ggg"=>"hhh"}
+
+          foo = @coll.find_one(id)
+          foo['ggg'].should == 'hhh'
+          foo['_id'].should ==  id
+          foo['id'].should == nil
+        end
       end
 
       describe "DELETE" do

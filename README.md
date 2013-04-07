@@ -59,7 +59,7 @@ deploying using Apache (via Passenger), you could limit access to specific hosts
 authentication using [mod_auth](http://httpd.apache.org/docs/2.0/howto/auth.html).
 
 Another option is to add Rack middleware for authorization and authentication. This would be done by modifying
-Drowsy's [`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file. [Warden](https://github.com/hassox/warden/wiki) is one such middleware option.
+Drowsy's [`config.ru`](https://github.com/zuk/DrowsyDromedary/blob/master/config.ru) file. [Warden](https://github.com/hassox/warden/wiki) is a good option.
 
 #### CORS (Cross-domain Browser Requests)
 

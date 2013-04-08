@@ -210,7 +210,7 @@ class DrowsyDromedary < Grape::API
         item
       end
 
-      desc "Replace the item with id :id in the collection"
+      desc "Replace or create the item with id :id in the collection"
       put '/:id' do
         id = BSON::ObjectId(params[:id])
         data = extract_data_from_params

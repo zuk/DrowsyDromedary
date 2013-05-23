@@ -210,6 +210,28 @@ describe DrowsyDromedary do
       end
     end
 
+    describe "DELETE" do
+      it "removes a collection from the db" do
+        coll_to_be_deleted = 'to_be_deleted'
+
+        # sanity check first
+        @db.drop_collection(coll_to_be_deleted)
+
+        post "/#{$DB}", :collection => coll_to_be_deleted
+        last_response.status.should == 201
+
+        @db.collection(coll_to_be_deleted).should_not be_nil
+        
+        delete "/#{$DB}/#{coll_to_be_deleted}"
+        last_response.status.should == 200
+
+        @db.collection_names.should_not include(coll_to_be_deleted)
+        #get "/#{$DB}/#{coll_to_be_deleted}"
+
+        #last_response.status.should == 404
+      end
+    end
+
     describe "/db/collection/id" do
 
       describe "GET" do

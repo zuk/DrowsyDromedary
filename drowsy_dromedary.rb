@@ -178,8 +178,6 @@ class DrowsyDromedary < Grape::API
       end
     end
 
-    # TODO: implement DELETE to drop collection
-
     resource '/:collection' do
       desc "Retrieve all items in the collection"
       get do
@@ -195,6 +193,15 @@ class DrowsyDromedary < Grape::API
         # FIXME: save ourselves the extra query and just return `data`?
         @db.collection(params[:collection]).find_one(id)
       end
+
+      desc "Drop the collection"
+      delete do
+        result = @db.drop_collection(params[:collection])
+
+        unless result
+          error!("Could not drop collection #{params[:colleciton].inspect}!", 500)
+        end
+      end      
 
       # TODO: implement DELETE to allow mass deletion of items in collection
 

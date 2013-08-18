@@ -56,7 +56,7 @@ class DrowsyDromedary < Grape::API
       return @dbs[db] if @dbs[db]
       c = connect
       if c.database_names.include?(db.to_s)
-        c.db(db, :strict => opts[:strict] || true)
+        c.db(db, :strict => opts.has_key?(:strict) ? opts[:strict] : true)
       else
         return false
       end

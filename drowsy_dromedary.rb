@@ -51,12 +51,12 @@ class DrowsyDromedary < Grape::API
       @dbs[db]
     end
 
-    def connect_to_db(db)
+    def connect_to_db(db, opts = {})
       @dbs ||= {}
       return @dbs[db] if @dbs[db]
       c = connect
       if c.database_names.include?(db.to_s)
-        c.db(db, :strict => true)
+        c.db(db, :strict => opts[:strict] || true)
       else
         return false
       end
@@ -150,7 +150,13 @@ class DrowsyDromedary < Grape::API
 
   resource '/:db' do
     before do
-      @db = connect_to_db(params[:db])
+      db_opts = {}
+      if params[:strict]
+        if params[:strict] == '0' || params[:strict] == 'false'
+          db_opts[:strict] = false
+        end
+      end
+      @db = connect_to_db(params[:db], db_opts)
       unless @db
         error!("There is no database named #{params[:db].inspect}!", 404)
       end

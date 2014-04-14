@@ -139,6 +139,15 @@ describe DrowsyDromedary do
           r.first['foo'].should == 'faa'
         end
 
+        it "returns a subset of records in the collection when applying a limit" do
+          get "/#{$DB}/testing", {:limit => 1}
+          last_response.status.should == 200
+          r = JSON.parse(last_response.body)
+
+          r.length.should == 1
+          r.first['foo'].should == 'faa'
+        end
+
         it "returns a subset of records in the collection using a nested selector" do
           get "/#{$DB}/testing", {:selector => {'fee' => {'cost' => 1000.12}, 'faa' => 'ccc'}.to_json}
           last_response.status.should == 200

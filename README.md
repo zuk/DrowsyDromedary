@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tarciosaraiva/DrowsyDromedary.svg)](https://travis-ci.org/tarciosaraiva/DrowsyDromedary)
+
 DrowsyDromedary
 ===============
 

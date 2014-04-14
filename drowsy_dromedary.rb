@@ -194,7 +194,8 @@ class DrowsyDromedary < Grape::API
       get do
         selector = extract_selector_from_params
         sort = extract_sort_from_params
-        @db.collection(params[:collection]).find(selector, :sort => sort).to_a
+        limit = params[:limit].to_i || 0
+        @db.collection(params[:collection]).find(selector, :sort => sort).limit(limit).to_a
       end
 
       desc "Add a new item to the collection"

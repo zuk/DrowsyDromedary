@@ -16,7 +16,7 @@ You'll need a working Ruby environment (tested on 1.9) with [Bundler](http://gem
 
 ```
 bundle
-rackup
+bundle exec rackup
 ```
 
 Drowsy should now be running at [http://localhost:9292](http://localhost:9292), talking to your `mongod` running on localhost.

@@ -1,5 +1,3 @@
-source :rubygems
-
 gem 'grape', :git => 'git://github.com/intridea/grape.git', :ref => "346fb94"
 gem 'json'
 gem 'mongo'

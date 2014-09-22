@@ -19,7 +19,6 @@ GIT
       rack (>= 1.0)
 
 GEM
-  remote: http://rubygems.org/
   specs:
     bson (1.6.2)
     bson_ext (1.6.2)

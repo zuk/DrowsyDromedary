@@ -55,7 +55,7 @@ class DrowsyDromedary < Grape::API
       @dbs ||= {}
       return @dbs[db] if @dbs[db]
       c = connect
-      
+
       if opts[:strict] == false
         c.db(db, :strict => false)
       else
@@ -129,20 +129,32 @@ class DrowsyDromedary < Grape::API
     error_response({:message => e, :status => 400})
   end
 
+  # Error handler for Mongo::OperationFailure which happen
+  # on things like unique key violation
+  rescue_from Mongo::OperationFailure do |e|
+    if e.message =~ /^11000/
+      # If error code is 11000 we have a Duplicate key violation so we send 409 (conflict)
+      error_response({ :message =>  "Duplicate key error: #{e.inspect}", :status => 409 })
+    else
+      # everything else isn't defined yet so we send 500 (internal server error)
+      error_response({ :message => e.inspect, :status => 500 })
+    end
+  end
+
   get '/' do
     connect.database_names
   end
 
   post '/' do
     check_required_params(:db)
-    
+
     if connect.database_names.include? params[:db]
       status 200
       connect_to_db(params[:db]).collection_names
     else
       db = create_db(params[:db])
 
-      if db 
+      if db
         status 201
         db.collection_names
       else
@@ -173,14 +185,14 @@ class DrowsyDromedary < Grape::API
 
     post do
       check_required_params(:collection)
-      
+
       if @db.collection_names.include? params[:collection]
         status 200
         @db.collection(params[:collection]).find().to_a
       else
         coll = @db.create_collection(params[:collection])
 
-        if coll 
+        if coll
           redirect "/#{params[:db]}/#{params[:collection]}", :status => 201
           status 201
         else
@@ -213,7 +225,7 @@ class DrowsyDromedary < Grape::API
         unless result
           error!("Could not drop collection #{params[:colleciton].inspect}!", 500)
         end
-      end      
+      end
 
       # TODO: implement DELETE to allow mass deletion of items in collection
 
@@ -262,7 +274,7 @@ class DrowsyDromedary < Grape::API
 
         data.delete 'id'
         data.delete '_id'
-        
+
         #@db.collection(params[:collection]).save(item)
         @db.collection(params[:collection]).update({"_id" => id}, {"$set" => data})
 

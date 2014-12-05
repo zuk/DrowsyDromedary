@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 
 gem 'grape', :git => 'git://github.com/intridea/grape.git', :ref => "346fb94"
 gem 'json'
-gem 'mongo'
-gem 'bson'
+gem 'mongo', '>1.11.0'
+gem 'bson', '>1.11.0'
 gem 'bson_ext'
 gem 'rack-cors', :require => 'rack/cors'
 

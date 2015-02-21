@@ -41,7 +41,7 @@ class DrowsyDromedary < Grape::API
     # end
 
     def connect
-      @connection ||= Mongo::Connection.new
+      @connection ||= Mongo::Connection.new(ENV["MONGO_HOST"])
     end
 
     def create_db(db)

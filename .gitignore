@@ -15,3 +15,6 @@ test/version_tmp
 .yardoc
 _yardoc
 doc/
+
+config.yaml
+irb_debugging.rb

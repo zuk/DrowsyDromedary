@@ -1,0 +1,6 @@
+# Copy this file to config.yaml
+# Then change config.yaml to use your username and password
+# Never enter your values in config.example.yaml and commit it
+basicauth:
+    username: foo
+    password: bar

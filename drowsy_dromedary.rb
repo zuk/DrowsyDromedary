@@ -285,7 +285,13 @@ class DrowsyDromedary < Grape::API
       desc "Delete the item with id :id from the collection"
       delete '/:id' do
         id = BSON::ObjectId(params[:id])
-        if @db.collection(params[:collection]).remove({'_id' => id})
+        # MongoDB in version 2.4 doesn't return any error or indication that the document to be deleted didn't exist
+        # To mitigate this and prevent WakefulWeasel from endless loops deleting we check for existance and then delete
+        # If document doesn't exist we return 500 error
+        # This is better than returning 200 on a delete for a non existing document and getting weird side effect, but
+        # pretty is different.
+        # if @db.collection(params[:collection]).remove({'_id' => id})
+        if !@db.collection(params[:collection]).find_one(id).nil? && @db.collection(params[:collection]).remove({'_id' => id})
           {} # FIXME: we probably want to just return nil (i.e. null) here, but this is not parsable by JSON.parse()
         else
           error!("Item #{params[:id].inspect} could not be deleted from #{params[:collection].inspect}!", 500)
